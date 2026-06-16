@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f58a35" />
+  <meta name="description" content="敬物留忆，‘易’启新程毕业季跳蚤市场——院史擂台问答区" />
+  <title>敬物留忆，‘易’启新程｜院史擂台问答区</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="bg-decor decor-plane">✈</div>
+  <div class="bg-decor decor-leaf">🍂</div>
+  <div class="bg-decor decor-star">★</div>
+  <main class="shell">
+    <header class="hero">
+      <div class="badge">2026 毕业季跳蚤市场 · 院史擂台问答区</div>
+      <h1>敬物留忆，‘易’启新程</h1>
+      <p class="subtitle">随机抽取 10 道敬一书院院史、五色双院与空间制度题，答对 80% 即可兑换印章</p>
+      <div class="units">
+        <p><span>主办单位</span> 共青团汕头大学工学院委员会、汕头大学敬一书院</p>
+        <p><span>承办单位</span> 汕头大学敬一书院导生会</p>
+      </div>
+    </header>
+
+    <section class="stats-grid" aria-label="活动信息">
+      <div class="mini-card"><strong>90+</strong><span>扩充题库</span></div>
+      <div class="mini-card"><strong>10</strong><span>随机抽题</span></div>
+      <div class="mini-card"><strong>80%</strong><span>兑换标准</span></div>
+      <div class="mini-card"><strong id="bestScore">--</strong><span>本机最佳</span></div>
+    </section>
+
+    <section class="card intro-card" id="introCard">
+      <div>
+        <h2>答题规则</h2>
+        <p>系统将从题库中随机抽取 10 题。提交后自动计算正确率，正确率达到 80% 及以上显示“可兑换一个印章盖至集章卡上”。未达到 80% 可查看正确答案并再次挑战。</p>
+      </div>
+      <button class="primary" id="startBtn">开始随机抽题</button>
+    </section>
+
+    <section class="status card hidden" id="statusBar">
+      <div>
+        <strong id="roundInfo">第 1 轮</strong>
+        <span id="progressText">已抽取 10 题</span>
+        <div class="progress-wrap"><div id="progressFill"></div></div>
+      </div>
+      <button class="ghost" id="reshuffleBtn">重新抽题</button>
+    </section>
+
+    <form id="quizForm" class="quiz-list hidden"></form>
+
+    <section class="actions hidden" id="actions">
+      <button class="primary" id="submitBtn" type="button">提交答案</button>
+    </section>
+
+    <section class="card result hidden" id="resultCard"></section>
+
+    <footer class="footer">
+      题库内容基于敬一书院院史、空间管理制度、2025年度书院建设自评报告及公开资料整理。现场兑换以工作人员核验为准。
+    </footer>
+  </main>
+
+  <script src="questions.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -4,15 +4,9 @@ const introCard = $('#introCard');
 const statusBar = $('#statusBar');
 const actions = $('#actions');
 const resultCard = $('#resultCard');
-const bestScore = $('#bestScore');
 let currentQuestions = [];
 let round = 0;
 let submitted = false;
-
-function initBest() {
-  const best = localStorage.getItem('jingyiQuizBest');
-  bestScore.textContent = best ? `${best}%` : '--';
-}
 
 function sampleQuestions(count = 10) {
   const bank = [...window.QUESTION_BANK];
@@ -28,7 +22,7 @@ function getUserAnswer(qid) { return [...document.querySelectorAll(`[name="q-${q
 
 function updateProgress() {
   const answered = currentQuestions.filter(q => getUserAnswer(q.id).length > 0).length;
-  $('#progressText').textContent = `已作答 ${answered}/10 题｜题库共 ${window.QUESTION_BANK.length} 题`;
+  $('#progressText').textContent = `已作答 ${answered}/10 题`;
   $('#progressFill').style.width = `${answered * 10}%`;
 }
 
@@ -44,7 +38,7 @@ function renderQuiz() {
       </label>
     `).join('');
     return `
-      <article class="question-card">
+      <article class="question-card" style="--i:${idx}">
         <div class="q-head">
           <div class="q-index">${idx + 1}</div>
           <div class="q-title">${q.question}<span class="q-type">${isMultiple ? '多选 · 可多选' : '单选'}</span></div>
@@ -69,7 +63,23 @@ function startRound() {
   resultCard.classList.add('hidden');
   resultCard.innerHTML = '';
   renderQuiz();
-  window.scrollTo({top:0, behavior:'smooth'});
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function launchConfetti() {
+  const symbols = ['🎓', '⭐', '🍂', '🧡', '✦', '📚'];
+  for (let i = 0; i < 42; i++) {
+    const piece = document.createElement('span');
+    piece.className = 'burst';
+    piece.textContent = symbols[i % symbols.length];
+    piece.style.left = `${45 + (Math.random() * 20 - 10)}vw`;
+    piece.style.top = `${44 + (Math.random() * 10 - 5)}vh`;
+    piece.style.setProperty('--x', `${Math.random() * 420 - 210}px`);
+    piece.style.setProperty('--y', `${Math.random() * 320 - 230}px`);
+    piece.style.animationDelay = `${Math.random() * .12}s`;
+    document.body.appendChild(piece);
+    setTimeout(() => piece.remove(), 1200);
+  }
 }
 
 function submitQuiz() {
@@ -85,36 +95,34 @@ function submitQuiz() {
     const user = getUserAnswer(q.id);
     const ok = normalize(user) === normalize(q.answer);
     if (ok) correct += 1;
-    return {q, idx, user, ok};
+    return { q, idx, user, ok };
   });
   const percent = Math.round((correct / currentQuestions.length) * 100);
   const passed = percent >= 80;
-  const best = Math.max(Number(localStorage.getItem('jingyiQuizBest') || 0), percent);
-  localStorage.setItem('jingyiQuizBest', best);
-  bestScore.textContent = `${best}%`;
   const code = `JY-${new Date().toISOString().slice(5,10).replace('-','')}-${String(Date.now()).slice(-4)}`;
   document.querySelectorAll('input').forEach(el => el.disabled = true);
   actions.classList.add('hidden');
   resultCard.classList.remove('hidden');
+  if (passed) launchConfetti();
   resultCard.innerHTML = `
     <h2>${passed ? '挑战成功！' : '还差一点点！'}</h2>
     <div class="score">${correct}/10 · ${percent}%</div>
-    ${passed ? `<div class="stamp">可兑换一个印章<br/>盖至集章卡上</div><div class="code">现场核验码：${code}</div>` : '<p class="fail">再接再励，可以查看正确答案后再来一次。</p>'}
+    ${passed ? `<div class="stamp">可兑换一个印章<br/>盖至集章卡上</div><div class="code">现场核验码：${code}</div>` : '<p class="fail">再接再厉，可以查看正确答案后再来一次。</p>'}
     <div class="result-actions">
       <button class="secondary" type="button" id="showAnswersBtn">查看正确答案</button>
       <button class="secondary" type="button" id="printBtn">打印/保存结果</button>
-      <button class="primary" type="button" id="againBtn">再来一次作答</button>
+      <button class="primary" type="button" id="againBtn"><span>再来一次作答</span></button>
     </div>
     <div class="answer-list hidden" id="answerList">${renderAnswers(details)}</div>
   `;
   $('#showAnswersBtn').addEventListener('click', () => $('#answerList').classList.toggle('hidden'));
   $('#printBtn').addEventListener('click', () => window.print());
   $('#againBtn').addEventListener('click', startRound);
-  resultCard.scrollIntoView({behavior:'smooth', block:'start'});
+  resultCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function renderAnswers(details) {
-  return details.map(({q, idx, user, ok}) => {
+  return details.map(({ q, idx, user, ok }) => {
     const userText = user.length ? user.map(k => `${k}. ${q.options[k]}`).join('；') : '未作答';
     const rightText = q.answer.map(k => `${k}. ${q.options[k]}`).join('；');
     return `
@@ -129,7 +137,6 @@ function renderAnswers(details) {
   }).join('');
 }
 
-initBest();
 $('#startBtn').addEventListener('click', startRound);
 $('#reshuffleBtn').addEventListener('click', startRound);
 $('#submitBtn').addEventListener('click', submitQuiz);
